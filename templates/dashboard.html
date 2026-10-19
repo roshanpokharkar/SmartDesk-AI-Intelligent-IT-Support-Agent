@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div><h1>Hello, {{ user.name.split()[0] }}</h1><p class="muted">Here is where your support requests stand.</p></div>
+  <a class="btn" href="{{ url_for('chat') }}">Ask the AI</a>
+</header>
+<section class="cards">
+  <div class="card stat"><span class="muted">Total tickets</span><strong>{{ stats.total }}</strong></div>
+  <div class="card stat blue"><span class="muted">Open</span><strong>{{ stats.open }}</strong></div>
+  <div class="card stat amber"><span class="muted">In progress</span><strong>{{ stats.progress }}</strong></div>
+  <div class="card stat green"><span class="muted">Resolved</span><strong>{{ stats.resolved }}</strong></div>
+</section>
+<section class="grid2">
+  <div class="card"><h2>Tickets by status</h2>
+    {% if stats.total %}<div class="chart-box"><canvas id="statusChart"></canvas></div>
+    {% else %}<p class="muted">No tickets yet. Chat with the AI first, and raise a ticket if the fix does not work.</p>{% endif %}</div>
+  <div class="card"><h2>Tickets by category</h2>
+    {% if stats.total %}<div class="chart-box"><canvas id="catChart"></canvas></div>
+    {% else %}<p class="muted">Category breakdown appears after your first ticket.</p>{% endif %}</div>
+</section>
+<section class="grid2">
+  <div class="card"><h2>Recent conversations</h2>
+    {% for c in convos %}<a class="row" href="{{ url_for('chat', c=c.id) }}"><span>{{ c.title }}</span><small class="muted">{{ c.n }} messages</small></a>
+    {% else %}<p class="muted">No conversations yet.</p>{% endfor %}</div>
+  <div class="card"><h2>Ticket history</h2>
+    {% for t in tickets %}<a class="row" href="{{ url_for('tickets') }}"><span><b>{{ code(t.id) }}</b> {{ t.subject }}</span>
+      <span class="badge s-{{ t.status|replace(' ', '') }}">{{ t.status }}</span></a>
+    {% else %}<p class="muted">No tickets yet.</p>{% endfor %}</div>
+</section>
+{% endblock %}
+{% block scripts %}
+{% if stats.total %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+Chart.defaults.color = '#9fb0cf';
+new Chart(document.getElementById('statusChart'), {type: 'doughnut',
+  data: {labels: ['Open', 'In Progress', 'Resolved'], datasets: [{data: {{ status_data|tojson }}, backgroundColor: ['#3b82f6', '#f59e0b', '#22c55e'], borderWidth: 0}]},
+  options: {maintainAspectRatio: false, cutout: '65%'}});
+new Chart(document.getElementById('catChart'), {type: 'bar',
+  data: {labels: {{ cat_labels|tojson }}, datasets: [{data: {{ cat_data|tojson }}, backgroundColor: '#3b82f6', borderRadius: 6}]},
+  options: {maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}}});
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Knowledge Base{% endblock %}
+{% block content %}
+<header class="page-head"><div><h1>Knowledge base</h1><p class="muted">Search common IT problems and their fixes.</p></div></header>
+<form class="search" method="get"><input name="q" value="{{ q }}" placeholder="Search e.g. printer, wifi, password" maxlength="100"><button class="btn">Search</button></form>
+{% if q %}<p class="muted">{{ articles|length }} result(s) for "{{ q }}"</p>{% endif %}
+<section class="grid2">
+{% for a in articles %}
+  <details class="card article"><summary><span>{{ a.title }}</span><span class="badge">{{ a.category }}</span></summary>
+    <div class="steps">{{ a.content }}</div></details>
+{% else %}
+  <div class="card empty"><p>No articles match your search. Try other words, or ask the AI assistant.</p><a class="btn" href="{{ url_for('chat') }}">Ask the AI</a></div>
+{% endfor %}
+</section>
+{% endblock %}

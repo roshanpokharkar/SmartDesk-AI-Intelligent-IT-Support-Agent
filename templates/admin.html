@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<header class="page-head"><div><h1>Admin panel</h1><p class="muted">Manage every support request and user.</p></div></header>
+<section class="cards five">
+  <div class="card stat"><span class="muted">Tickets</span><strong>{{ stats.tickets }}</strong></div>
+  <div class="card stat blue"><span class="muted">Open</span><strong>{{ stats.open }}</strong></div>
+  <div class="card stat amber"><span class="muted">In progress</span><strong>{{ stats.progress }}</strong></div>
+  <div class="card stat green"><span class="muted">Resolved</span><strong>{{ stats.resolved }}</strong></div>
+  <div class="card stat"><span class="muted">Users</span><strong>{{ stats.users }}</strong></div>
+</section>
+<h2>All tickets</h2>
+<div class="filters">
+  <a class="{{ 'on' if not selected }}" href="{{ url_for('admin') }}">All</a>
+  {% for s in statuses %}<a class="{{ 'on' if selected == s }}" href="{{ url_for('admin', status=s) }}">{{ s }}</a>{% endfor %}
+</div>
+<div class="card table-wrap">
+{% if tickets %}
+<table><thead><tr><th>ID</th><th>User</th><th>Subject</th><th>Category</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody>
+{% for t in tickets %}
+<tr><td><b>{{ code(t.id) }}</b></td><td>{{ t.user_name }}<small class="muted block">{{ t.user_email }}</small></td>
+  <td><details><summary>{{ t.subject }}</summary><p class="desc">{{ t.description }}</p></details></td><td>{{ t.category }}</td>
+  <td><select name="priority" form="f{{ t.id }}">{% for p in priorities %}<option {{ 'selected' if t.priority == p }}>{{ p }}</option>{% endfor %}</select></td>
+  <td><select name="status" form="f{{ t.id }}">{% for s in statuses %}<option {{ 'selected' if t.status == s }}>{{ s }}</option>{% endfor %}</select></td>
+  <td><form id="f{{ t.id }}" method="post" action="{{ url_for('admin_update_ticket', tid=t.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn small">Save</button></form></td></tr>
+{% endfor %}</tbody></table>
+{% else %}<div class="empty"><p>No tickets match this filter.</p></div>{% endif %}
+</div>
+<h2>Registered users</h2>
+<div class="card table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Tickets</th><th>Joined</th></tr></thead><tbody>
+{% for u in users %}<tr><td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td><td>{{ u.n }}</td><td>{{ u.created_at[:10] }}</td></tr>{% endfor %}
+</tbody></table></div>
+<h2>Add knowledge base article</h2>
+<form method="post" action="{{ url_for('admin_add_article') }}" class="card form-card">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label>Title<input name="title" required maxlength="120"></label>
+  <div class="grid2 tight"><label>Category<select name="category">{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select></label>
+  <label>Search keywords<input name="keywords" placeholder="wifi router internet"></label></div>
+  <label>Solution steps<textarea name="content" rows="5" required></textarea></label>
+  <div class="actions"><button class="btn">Add article</button></div>
+</form>
+{% endblock %}

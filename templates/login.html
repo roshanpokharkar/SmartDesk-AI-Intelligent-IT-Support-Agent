@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block auth %}
+<div class="auth-card">
+  <div class="brand big"><span class="logo">S</span> SmartDesk <em>AI</em></div>
+  <p class="muted">Instant IT help. Tickets when you need a human.</p>
+  <form method="post" novalidate>
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>Email<input type="email" name="email" value="{{ email or '' }}" required autofocus></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button class="btn full">Log in</button>
+  </form>
+  <p class="muted center">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+</div>
+{% endblock %}

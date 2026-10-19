@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}New ticket{% endblock %}
+{% block content %}
+<header class="page-head"><div><h1>Create a support ticket</h1><p class="muted">Tell us what happened and what you already tried.</p></div></header>
+<form method="post" class="card form-card" novalidate>
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="conversation_id" value="{{ form.get('conversation_id', '') }}">
+  <label>Subject<input name="subject" value="{{ form.get('subject', '') }}" maxlength="120" required></label>
+  <div class="grid2 tight">
+    <label>Category<select name="category">{% for c in categories %}<option {{ 'selected' if form.get('category') == c }}>{{ c }}</option>{% endfor %}</select></label>
+    <label>Priority<select name="priority">{% for p in priorities %}<option {{ 'selected' if (form.get('priority') or 'Medium') == p }}>{{ p }}</option>{% endfor %}</select></label>
+  </div>
+  <label>Description<textarea name="description" rows="8" maxlength="3000" required>{{ form.get('description', '') }}</textarea></label>
+  <div class="actions"><button class="btn">Submit ticket</button><a class="btn ghost" href="{{ url_for('tickets') }}">Cancel</a></div>
+</form>
+{% endblock %}

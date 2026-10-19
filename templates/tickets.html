@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}My Tickets{% endblock %}
+{% block content %}
+<header class="page-head"><div><h1>My tickets</h1><p class="muted">Track every request you have raised.</p></div>
+  <a class="btn" href="{{ url_for('new_ticket') }}">New ticket</a></header>
+<div class="filters">
+  <a class="{{ 'on' if not selected }}" href="{{ url_for('tickets') }}">All</a>
+  {% for s in statuses %}<a class="{{ 'on' if selected == s }}" href="{{ url_for('tickets', status=s) }}">{{ s }}</a>{% endfor %}
+</div>
+<div class="card table-wrap">
+{% if tickets %}
+<table><thead><tr><th>ID</th><th>Subject</th><th>Category</th><th>Priority</th><th>Status</th><th>Created</th></tr></thead><tbody>
+{% for t in tickets %}
+<tr><td><b>{{ code(t.id) }}</b></td>
+  <td><details><summary>{{ t.subject }}</summary><p class="desc">{{ t.description }}</p></details></td>
+  <td>{{ t.category }}</td><td><span class="badge p-{{ t.priority }}">{{ t.priority }}</span></td>
+  <td><span class="badge s-{{ t.status|replace(' ', '') }}">{{ t.status }}</span></td><td>{{ t.created_at[:16] }}</td></tr>
+{% endfor %}</tbody></table>
+{% else %}<div class="empty"><p>No tickets found.</p><a class="btn" href="{{ url_for('new_ticket') }}">Create your first ticket</a></div>{% endif %}
+</div>
+{% endblock %}

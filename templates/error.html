@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% set body %}
+<div class="empty"><h1>{{ title }}</h1><p>{{ msg }}</p><a class="btn" href="{{ url_for('index') }}">Back to home</a></div>
+{% endset %}
+{% block content %}{{ body }}{% endblock %}
+{% block auth %}{{ body }}{% endblock %}

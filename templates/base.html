@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SmartDesk AI{% endblock %} - SmartDesk AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-csrf="{{ csrf }}">
+{% set ep = request.endpoint %}
+{% if user %}
+<button class="menu-btn" id="menuBtn" aria-label="Open menu">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><span class="logo">S</span> SmartDesk <em>AI</em></div>
+  <nav>
+    <a href="{{ url_for('dashboard') }}" class="{{ 'active' if ep == 'dashboard' }}">Dashboard</a>
+    <a href="{{ url_for('chat') }}" class="{{ 'active' if ep == 'chat' }}">AI Assistant</a>
+    <a href="{{ url_for('tickets') }}" class="{{ 'active' if ep in ('tickets', 'new_ticket') }}">My Tickets</a>
+    <a href="{{ url_for('kb') }}" class="{{ 'active' if ep == 'kb' }}">Knowledge Base</a>
+    {% if user.role == 'admin' %}<a href="{{ url_for('admin') }}" class="{{ 'active' if ep == 'admin' }}">Admin Panel</a>{% endif %}
+  </nav>
+  <div class="side-user">
+    <div class="avatar">{{ user.name[0]|upper }}</div>
+    <div><strong>{{ user.name }}</strong><small>{{ user.role|capitalize }}</small></div>
+    <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}">
+      <button class="link-btn" title="Log out">Log out</button></form>
+  </div>
+</aside>
+<main class="main">{% block content %}{% endblock %}</main>
+{% else %}
+<main class="auth-wrap">{% block auth %}{% endblock %}</main>
+{% endif %}
+<div id="toasts">
+  {% for cat, msg in get_flashed_messages(with_categories=true) %}<div class="toast {{ cat }}">{{ msg }}</div>{% endfor %}
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

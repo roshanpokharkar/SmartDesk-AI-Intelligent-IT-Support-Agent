@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}AI Assistant{% endblock %}
+{% block content %}
+<div class="chat-layout">
+  <aside class="card chat-side">
+    <a class="btn full" href="{{ url_for('chat') }}">New chat</a>
+    <div id="convoList">
+    {% for c in convos %}
+      <div class="convo {{ 'active' if current and current.id == c.id }}">
+        <a href="{{ url_for('chat', c=c.id) }}">{{ c.title }}</a>
+        <button class="link-btn del" data-id="{{ c.id }}" title="Delete conversation">&times;</button>
+      </div>
+    {% else %}<p class="muted small">Your conversations will appear here.</p>{% endfor %}
+    </div>
+  </aside>
+  <section class="card chat-main">
+    <div class="chat-head"><div><strong>SmartDesk AI</strong><small class="muted">IT support assistant</small></div>
+      <a class="btn ghost" id="ticketLink" href="{{ url_for('new_ticket', conversation_id=current.id) if current else url_for('new_ticket') }}">Create ticket</a></div>
+    <div class="messages" id="messages" data-cid="{{ current.id if current else '' }}">
+      {% if not messages %}
+      <div class="welcome" id="welcome"><h2>What is going wrong?</h2><p class="muted">Describe the problem and I will walk you through the fix.</p>
+        <div class="chips">
+          <button class="chip">My Wi-Fi is connected but there is no internet</button>
+          <button class="chip">My printer shows offline</button>
+          <button class="chip">I cannot log in to my account</button>
+          <button class="chip">My laptop is very slow</button>
+        </div></div>
+      {% endif %}
+      {% for m in messages %}<div class="msg {{ m.role }}"><div class="bubble md">{{ m.content }}</div></div>{% endfor %}
+    </div>
+    <form id="chatForm" class="chat-input">
+      <textarea id="chatText" rows="1" maxlength="2000" placeholder="Type your IT problem..." required></textarea>
+      <button class="btn" id="sendBtn">Send</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/chat.js') }}"></script>{% endblock %}
